@@ -1,0 +1,42 @@
+import * as express from "express";
+import * as mongoose from "mongoose";
+import * as bodyParser from "body-parser";
+import * as cors from "cors";
+import config from "./config";
+
+const port = process.env.PORT || 8080;
+const app = express();
+
+var corsOptions = {
+  origin: "http://localhost:8081",
+};
+
+app.use(cors(corsOptions));
+
+// parse requests of content-type - application/json
+app.use(bodyParser.json());
+
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to ServiceAdviserAPI application." });
+});
+
+mongoose.connect(config.connectionString, config.options);
+mongoose.connection.on("connected", () => {
+  console.log("Connected to MongoDB");
+});
+mongoose.connection.on("error", () => {
+  console.log("Error while conneting to MongoDB");
+});
+
+require("./controllers/OwnerController")(app);
+require("./controllers/ServiceContoller")(app);
+require("./controllers/VehicleController")(app);
+
+const server = app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
+
+module.exports = server;
