@@ -15,37 +15,45 @@ module.exports = (app) => {
     }
   };
 
-  router.post(
-    "/vehicle",
-    validator.body(
-      Joi.object({
-        VRN: Joi.string().required(),
-        make: Joi.string().required(),
-        model: Joi.string().required(),
-        mfgYear: Joi.number().required(),
-        isDeleted: Joi.boolean(),
-      })
-    ),
-    async (req, res) => {
-      const vehicle = new Vehicle({
-        VRN: req.body.VRN,
-        make: req.body.make,
-        model: req.body.model,
-        mfgYear: req.body.mfgYear,
-        isDeleted: req.body.isDeleted,
-      });
+  router.post("/vehicle", async (req, res) => {
+    const { body } = req;
 
-      Vehicle.create(vehicle, (err, data) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message || "Cannot create Vehicle",
-          });
-        } else {
-          res.status(201).send(data);
-        }
-      });
+    const vehicleValidationScheema = Joi.object().keys({
+      VRN: Joi.string().required(),
+      make: Joi.string().required(),
+      model: Joi.string().required(),
+      mfgYear: Joi.number().required(),
+      isDeleted: Joi.boolean(),
+    });
+
+    try {
+      const { error, value } = vehicleValidationScheema.validate(body);
+
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        const vehicle = new Vehicle({
+          VRN: req.body.VRN,
+          make: req.body.make,
+          model: req.body.model,
+          mfgYear: req.body.mfgYear,
+          isDeleted: req.body.isDeleted,
+        });
+
+        Vehicle.create(vehicle, (err, data) => {
+          if (err) {
+            res.status(500).send({
+              message: err.message || "Cannot create Vehicle",
+            });
+          } else {
+            res.status(201).send(data);
+          }
+        });
+      }
+    } catch (ex) {
+      res.status(500).send(ex);
     }
-  );
+  });
 
   router.get("/vehicles", (req, res) => {
     Vehicle.find({ isDeleted: false }, (err, data) => {

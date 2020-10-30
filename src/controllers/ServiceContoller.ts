@@ -15,38 +15,46 @@ module.exports = (app) => {
     }
   };
 
-  router.post(
-    "/service",
-    validator.body(
-      Joi.object({
-        mileage: Joi.number(),
-        lastServiceMileage: Joi.number(),
-        workingHours: Joi.number(),
-        lastServiceHours: Joi.number(),
-        lastServiceDate: Joi.string().required(),
-        isDeleted: Joi.boolean(),
-      })
-    ),
-    async (req, res) => {
-      const service = new Service({
-        mileage: req.body.mileage,
-        lastServiceMileage: req.body.lastServiceMileage,
-        workingHours: req.body.workingHours,
-        lastServiceHours: req.body.lastServiceHours,
-        lastServiceDate: req.body.lastServiceDate,
-      });
+  router.post("/service", async (req, res) => {
+    const { body } = req;
 
-      Service.create(service, (err, data) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message || "Cannot create Service",
-          });
-        } else {
-          res.status(201).send(data);
-        }
-      });
+    const serviceValidationScheema = Joi.object().keys({
+      mileage: Joi.number(),
+      lastServiceMileage: Joi.number(),
+      workingHours: Joi.number(),
+      lastServiceHours: Joi.number(),
+      lastServiceDate: Joi.string().required(),
+      isDeleted: Joi.boolean(),
+    });
+
+    try {
+      const { error, value } = serviceValidationScheema.validate(body);
+
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        const service = new Service({
+          mileage: value.mileage,
+          lastServiceMileage: value.lastServiceMileage,
+          workingHours: value.workingHours,
+          lastServiceHours: value.lastServiceHours,
+          lastServiceDate: value.lastServiceDate,
+        });
+
+        Service.create(service, (err, data) => {
+          if (err) {
+            res.status(500).send({
+              message: err.message || "Cannot create Service",
+            });
+          } else {
+            res.status(201).send(data);
+          }
+        });
+      }
+    } catch (ex) {
+      res.status(500).send(ex);
     }
-  );
+  });
 
   router.get("/services", (req, res) => {
     Service.find({ isDeleted: false }, (err, data) => {

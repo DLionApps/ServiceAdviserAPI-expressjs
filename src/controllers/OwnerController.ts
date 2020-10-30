@@ -15,39 +15,46 @@ module.exports = (app) => {
     }
   };
 
-  router.post(
-    "/owner",
-    validator.body(
-      Joi.object({
-        email: Joi.string().required(),
-        fName: Joi.string().required(),
-        lName: Joi.string().required(),
-        contactNumber: Joi.string().required(),
-        password: Joi.string().required(),
-        isDeleted: Joi.boolean(),
-      })
-    ),
-    async (req, res) => {
-      const owner = new Owner({
-        email: req.body.email,
-        fName: req.body.fName,
-        lName: req.body.lName,
-        contactNumber: req.body.contactNumber,
-        password: req.body.password,
-        isDeleted: req.body.isDeleted,
-      });
+  router.post("/owner", async (req, res) => {
+    const { body } = req;
 
-      Owner.create(owner, (err, data) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message || "Cannot create Owner",
-          });
-        } else {
-          res.status(201).send(data);
-        }
-      });
+    const ownerValidationScheema = Joi.object().keys({
+      email: Joi.string().required(),
+      fName: Joi.string().required(),
+      lName: Joi.string().required(),
+      contactNumber: Joi.string().required(),
+      password: Joi.string().required(),
+      isDeleted: Joi.boolean(),
+    });
+
+    try {
+      const { error, value } = ownerValidationScheema.validate(body);
+
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        const owner = new Owner({
+          email: value.email,
+          fName: value.fName,
+          lName: value.lName,
+          contactNumber: value.contactNumber,
+          password: value.password,
+          isDeleted: value.isDeleted,
+        });
+        Owner.create(owner, (err, data) => {
+          if (err) {
+            res.status(500).send({
+              message: err.message || "Cannot create Owner",
+            });
+          } else {
+            res.status(201).send(data);
+          }
+        });
+      }
+    } catch (ex) {
+      res.status(500).send(ex);
     }
-  );
+  });
 
   router.get("/owners", (req, res) => {
     Owner.find({ isDeleted: false }, (err, data) => {
