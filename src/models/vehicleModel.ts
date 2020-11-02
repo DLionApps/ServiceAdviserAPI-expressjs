@@ -7,6 +7,8 @@ const VehicleSchema = new mongoose.Schema({
   make: String,
   model: String,
   mfgYear: Number,
+  vehicleType: Number,
+  fuelType: [Number],
   isDeleted: { type: Boolean, default: false },
 });
 

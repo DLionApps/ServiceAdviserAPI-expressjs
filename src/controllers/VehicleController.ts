@@ -23,6 +23,8 @@ module.exports = (app) => {
       make: Joi.string().required(),
       model: Joi.string().required(),
       mfgYear: Joi.number().required(),
+      vehicleType: Joi.number().required(),
+      fuelType: Joi.array().min(1).items(Joi.number()).required(),
       isDeleted: Joi.boolean(),
     });
 
@@ -37,6 +39,8 @@ module.exports = (app) => {
           make: req.body.make,
           model: req.body.model,
           mfgYear: req.body.mfgYear,
+          vehicleType: req.body.vehicleType,
+          fuelType: req.body.fuelType,
           isDeleted: req.body.isDeleted,
         });
 
