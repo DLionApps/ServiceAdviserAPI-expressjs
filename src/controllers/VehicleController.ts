@@ -20,6 +20,7 @@ module.exports = (app) => {
 
     const vehicleValidationScheema = Joi.object().keys({
       VRN: Joi.string().required(),
+      nickName: Joi.string(),
       make: Joi.string().required(),
       model: Joi.string().required(),
       mfgYear: Joi.number().required(),
@@ -36,6 +37,7 @@ module.exports = (app) => {
       } else {
         const vehicle = new Vehicle({
           VRN: req.body.VRN,
+          nickName: req.body.nickName,
           make: req.body.make,
           model: req.body.model,
           mfgYear: req.body.mfgYear,

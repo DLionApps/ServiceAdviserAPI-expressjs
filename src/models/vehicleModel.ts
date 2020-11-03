@@ -4,6 +4,7 @@ import * as uuid from "uuid";
 const VehicleSchema = new mongoose.Schema({
   _id: String,
   VRN: String,
+  nickName: { type: String, default: undefined },
   make: String,
   model: String,
   mfgYear: Number,
