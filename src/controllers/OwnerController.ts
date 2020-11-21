@@ -97,19 +97,19 @@ module.exports = (app) => {
           res.status(403).send({
             message: "Email doesn't exists",
           });
+        } else {
+          const isValid = bcrypt.compareSync(value.password, owner.password);
+          if (!isValid) {
+            res.status(403).send({
+              message: "Email or password invalid",
+            });
+          } else {
+            const token = jwt.sign({ _id: owner._id }, "token");
+            res.header("auth-token", token).status(200).send({
+              token: token,
+            });
+          }
         }
-
-        const isValid = bcrypt.compareSync(value.password, owner.password);
-        if (!isValid) {
-          res.status(403).send({
-            message: "Email or password invalid",
-          });
-        }
-
-        const token = jwt.sign({ _id: owner._id }, "token");
-        res.header("auth-token", token).status(200).send({
-          token: token,
-        });
       }
     } catch (ex) {
       console.warn(ex);
