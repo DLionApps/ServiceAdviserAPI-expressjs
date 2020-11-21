@@ -94,14 +94,14 @@ module.exports = (app) => {
         });
 
         if (!owner) {
-          return res.status(403).send({
+          res.status(403).send({
             message: "Email doesn't exists",
           });
         }
 
         const isValid = bcrypt.compareSync(value.password, owner.password);
         if (!isValid) {
-          return res.status(403).send({
+          res.status(403).send({
             message: "Email or password invalid",
           });
         }
