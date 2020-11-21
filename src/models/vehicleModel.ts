@@ -11,6 +11,7 @@ const VehicleSchema = new mongoose.Schema({
   vehicleType: Number,
   fuelType: [Number],
   isDeleted: { type: Boolean, default: false },
+  ownerID: String,
 });
 
 VehicleSchema.pre("save", function (next) {

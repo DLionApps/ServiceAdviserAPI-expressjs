@@ -15,6 +15,7 @@ const environments = [
       useFindAndModify: false,
       useCreateIndex: true,
     },
+    tokenSecret: "",
   },
 ];
 

@@ -2,6 +2,8 @@ import Owner from "../models/ownerModel";
 import * as Joi from "joi";
 import { createValidator } from "express-joi-validation";
 import * as express from "express";
+import * as jwt from "jsonwebtoken";
+var bcrypt = require("bcryptjs");
 
 module.exports = (app) => {
   const validator = createValidator();
@@ -33,25 +35,84 @@ module.exports = (app) => {
       if (error) {
         res.status(500).send(error);
       } else {
+        const salt = bcrypt.genSaltSync(10);
+        const hashPassword = bcrypt.hashSync(value.password, salt);
+
         const owner = new Owner({
           email: value.email,
           fName: value.fName,
           lName: value.lName,
           contactNumber: value.contactNumber,
-          password: value.password,
+          password: hashPassword,
           isDeleted: value.isDeleted,
         });
-        Owner.create(owner, (err, data) => {
-          if (err) {
-            res.status(500).send({
-              message: err.message || "Cannot create Owner",
-            });
-          } else {
-            res.status(201).send(data);
-          }
+
+        const isEmailExists = await Owner.findOne({
+          email: value.email,
+          isDeleted: false,
+        });
+
+        if (!isEmailExists) {
+          await Owner.create(owner, (err, data) => {
+            if (err) {
+              res.status(500).send({
+                message: err.message || "Cannot create Owner",
+              });
+            } else {
+              res.status(201).send(data);
+            }
+          });
+        } else {
+          res.status(403).send({
+            message: "Email exists",
+          });
+        }
+      }
+    } catch (ex) {
+      console.warn(ex);
+      res.status(500).send(ex);
+    }
+  });
+
+  router.post("/login", async (req, res) => {
+    const { body } = req;
+
+    const ownerValidationScheema = Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    });
+
+    try {
+      const { error, value } = ownerValidationScheema.validate(body);
+
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        const owner: any = await Owner.findOne({
+          email: value.email,
+          isDeleted: false,
+        });
+
+        if (!owner) {
+          return res.status(403).send({
+            message: "Email doesn't exists",
+          });
+        }
+
+        const isValid = bcrypt.compareSync(value.password, owner.password);
+        if (!isValid) {
+          return res.status(403).send({
+            message: "Email or password invalid",
+          });
+        }
+
+        const token = jwt.sign({ _id: owner._id }, "token");
+        res.header("auth-token", token).status(200).send({
+          token: token,
         });
       }
     } catch (ex) {
+      console.warn(ex);
       res.status(500).send(ex);
     }
   });

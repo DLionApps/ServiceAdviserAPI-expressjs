@@ -9,6 +9,8 @@ const ServiceSchema = new mongoose.Schema({
   lastServiceHours: Number,
   lastServiceDate: String,
   isDeleted: { type: Boolean, default: false },
+  ownerID: String,
+  vehicleID: String,
 });
 
 ServiceSchema.pre("save", function (next) {
