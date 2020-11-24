@@ -88,12 +88,12 @@ module.exports = (app) => {
       if (error) {
         res.status(500).send(error);
       } else {
-        const owner: any = await Owner.findOne({
+        let owner: any = await Owner.findOne({
           email: value.email,
           isDeleted: false,
         });
 
-        if (!owner) {
+        if (owner === null) {
           res.status(403).send({
             message: "Email doesn't exists",
           });
