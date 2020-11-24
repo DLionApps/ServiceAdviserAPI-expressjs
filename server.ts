@@ -23,13 +23,17 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to ServiceAdviserAPI application." });
 });
 
-mongoose.connect(config.connectionString, config.options);
-mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB");
-});
-mongoose.connection.on("error", () => {
-  console.log("Error while conneting to MongoDB");
-});
+try {
+  mongoose.connect(config.connectionString, config.options);
+  mongoose.connection.on("connected", () => {
+    console.log("Connected to MongoDB");
+  });
+  mongoose.connection.on("error", () => {
+    console.log("Error while conneting to MongoDB");
+  });
+} catch (ex) {
+  console.log(ex);
+}
 
 require("./src/controllers/OwnerController")(app);
 require("./src/controllers/ServiceContoller")(app);
