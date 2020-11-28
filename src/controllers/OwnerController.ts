@@ -105,7 +105,7 @@ module.exports = (app) => {
             });
           } else {
             const token = jwt.sign({ _id: owner._id }, "token");
-            res.header("auth-token", token).status(200).send({
+            res.header("auth-token", token).status(201).send({
               token: token,
             });
           }
