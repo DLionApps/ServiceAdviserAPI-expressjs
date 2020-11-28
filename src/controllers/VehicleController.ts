@@ -26,6 +26,7 @@ module.exports = (app) => {
       mfgYear: Joi.number().required(),
       vehicleType: Joi.number().required(),
       fuelType: Joi.array().min(1).items(Joi.number()).required(),
+      ownerID: Joi.string().required(),
       isDeleted: Joi.boolean(),
     });
 
@@ -43,6 +44,7 @@ module.exports = (app) => {
           mfgYear: req.body.mfgYear,
           vehicleType: req.body.vehicleType,
           fuelType: req.body.fuelType,
+          ownerID: req.body.ownerID,
           isDeleted: req.body.isDeleted,
         });
 
