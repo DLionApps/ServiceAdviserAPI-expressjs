@@ -23,6 +23,7 @@ module.exports = (app) => {
       workingHours: Joi.number(),
       lastServiceHours: Joi.number(),
       lastServiceDate: Joi.string().required(),
+      vehicleID: Joi.string().required(),
       isDeleted: Joi.boolean(),
     });
 
@@ -38,6 +39,8 @@ module.exports = (app) => {
           workingHours: value.workingHours,
           lastServiceHours: value.lastServiceHours,
           lastServiceDate: value.lastServiceDate,
+          vehicleID: value.vehicleID,
+          isDeleted: value.isDeleted,
         });
 
         Service.create(service, (err, data) => {
