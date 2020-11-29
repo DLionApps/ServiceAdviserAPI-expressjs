@@ -1,10 +1,9 @@
 import Service from "../models/serviceModel";
 import * as Joi from "joi";
-import { createValidator } from "express-joi-validation";
 import * as express from "express";
+import validateToken from "../commonFunctions/TokenValidator";
 
 module.exports = (app) => {
-  const validator = createValidator();
   var router = express.Router();
 
   const getResouceCode = (data) => {
@@ -15,7 +14,7 @@ module.exports = (app) => {
     }
   };
 
-  router.post("/service", async (req, res) => {
+  router.post("/service", validateToken, async (req, res) => {
     const { body } = req;
 
     const serviceValidationScheema = Joi.object().keys({
@@ -56,7 +55,7 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/services", (req, res) => {
+  router.get("/services", validateToken, (req, res) => {
     Service.find({ isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -69,7 +68,7 @@ module.exports = (app) => {
     });
   });
 
-  router.get("/service/:id", (req, res) => {
+  router.get("/service/:id", validateToken, (req, res) => {
     Service.findOne({ _id: req.params.id, isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -82,7 +81,7 @@ module.exports = (app) => {
     });
   });
 
-  router.put("/service/:id", (req, res) => {
+  router.put("/service/:id", validateToken, (req, res) => {
     Service.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       req.body,
@@ -102,7 +101,7 @@ module.exports = (app) => {
     );
   });
 
-  router.delete("/service/:id", (req, res) => {
+  router.delete("/service/:id", validateToken, (req, res) => {
     Service.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       { isDeleted: true },

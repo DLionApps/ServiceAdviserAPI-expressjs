@@ -1,12 +1,11 @@
 import Owner from "../models/ownerModel";
 import * as Joi from "joi";
-import { createValidator } from "express-joi-validation";
 import * as express from "express";
 import * as jwt from "jsonwebtoken";
+import validateToken from "../commonFunctions/TokenValidator";
 var bcrypt = require("bcryptjs");
 
 module.exports = (app) => {
-  const validator = createValidator();
   var router = express.Router();
 
   const getResouceCode = (data) => {
@@ -121,7 +120,7 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/owners", (req, res) => {
+  router.get("/owners", validateToken, (req, res) => {
     Owner.find({ isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -134,7 +133,7 @@ module.exports = (app) => {
     });
   });
 
-  router.get("/owner/:id", (req, res) => {
+  router.get("/owner/:id", validateToken, (req, res) => {
     Owner.findOne({ _id: req.params.id, isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -147,7 +146,7 @@ module.exports = (app) => {
     });
   });
 
-  router.put("/owner/:id", (req, res) => {
+  router.put("/owner/:id", validateToken, (req, res) => {
     Owner.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       req.body,
@@ -167,7 +166,7 @@ module.exports = (app) => {
     );
   });
 
-  router.delete("/owner/:id", (req, res) => {
+  router.delete("/owner/:id", validateToken, (req, res) => {
     Owner.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       { isDeleted: true },

@@ -1,10 +1,9 @@
 import Vehicle from "../models/vehicleModel";
 import * as Joi from "joi";
-import { createValidator } from "express-joi-validation";
 import * as express from "express";
+import validateToken from "../commonFunctions/TokenValidator";
 
 module.exports = (app) => {
-  const validator = createValidator();
   var router = express.Router();
 
   const getResouceCode = (data) => {
@@ -15,7 +14,7 @@ module.exports = (app) => {
     }
   };
 
-  router.post("/vehicle", async (req, res) => {
+  router.post("/vehicle", validateToken, async (req, res) => {
     const { body } = req;
 
     const vehicleValidationScheema = Joi.object().keys({
@@ -63,7 +62,7 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/vehicles", (req, res) => {
+  router.get("/vehicles", validateToken, (req, res) => {
     Vehicle.find({ isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -76,7 +75,7 @@ module.exports = (app) => {
     });
   });
 
-  router.get("/vehicle/:id", (req, res) => {
+  router.get("/vehicle/:id", validateToken, (req, res) => {
     Vehicle.findOne({ _id: req.params.id, isDeleted: false }, (err, data) => {
       if (err) {
         res.status(500).send({
@@ -89,7 +88,7 @@ module.exports = (app) => {
     });
   });
 
-  router.put("/vehicle/:id", (req, res) => {
+  router.put("/vehicle/:id", validateToken, (req, res) => {
     Vehicle.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       req.body,
@@ -109,7 +108,7 @@ module.exports = (app) => {
     );
   });
 
-  router.delete("/vehicle/:id", (req, res) => {
+  router.delete("/vehicle/:id", validateToken, (req, res) => {
     Vehicle.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       { isDeleted: true },
