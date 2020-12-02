@@ -125,23 +125,63 @@ module.exports = (app) => {
       email: Joi.string().required(),
     });
 
-    const { error, value } = emailValidationScheema.validate(req.params);
+    try {
+      const { error, value } = emailValidationScheema.validate(req.params);
 
-    if (error) {
-      res.status(500).send(error);
-    } else {
-      let owner: any = await Owner.findOne({
-        email: value.email,
-        isDeleted: false,
-      });
-
-      if (owner === null) {
-        res.status(403).send({
-          message: "Email doesn't exists",
-        });
+      if (error) {
+        res.status(500).send(error);
       } else {
-        res.status(getResouceCode(owner)).send({ owner: owner });
+        let owner: any = await Owner.findOne({
+          email: value.email,
+          isDeleted: false,
+        });
+
+        if (owner === null) {
+          res.status(403).send({
+            message: "Email doesn't exists",
+          });
+        } else {
+          res.status(getResouceCode(owner)).send({ owner: owner });
+        }
       }
+    } catch (ex) {
+      res.status(500).send(ex);
+    }
+  });
+
+  router.put("/resetPasword/:email", async (req, res) => {
+    const { body } = req;
+
+    const passwordValidationScheema = Joi.object().keys({
+      password: Joi.string().required(),
+    });
+
+    try {
+      const { error, value } = passwordValidationScheema.validate(body);
+
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        const salt = bcrypt.genSaltSync(10);
+        const hashPassword = bcrypt.hashSync(value.password, salt);
+
+        const owner: any = await Owner.findOneAndUpdate(
+          { email: req.params.email, isDeleted: false },
+          { password: hashPassword },
+          {
+            new: true,
+          }
+        );
+        if (owner === null) {
+          res.status(403).send({
+            message: "Cannot reset password",
+          });
+        } else {
+          res.status(getResouceCode(owner)).send({ owner: owner });
+        }
+      }
+    } catch (ex) {
+      res.status(500).send(ex);
     }
   });
 
