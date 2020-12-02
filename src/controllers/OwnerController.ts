@@ -120,20 +120,28 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/CheckEmail/:email", (req, res) => {
-    Owner.findOne(
-      { email: req.params.email, isDeleted: false },
-      (err, data) => {
-        if (err) {
-          res.status(500).send({
-            statusCode: 500,
-            message: err,
-          });
-        } else {
-          res.status(getResouceCode(data)).send(data);
-        }
+  router.get("/CheckEmail/:email", async (req, res) => {
+    const emailValidationScheema = Joi.object().keys({
+      email: Joi.string().required(),
+    });
+
+    const { error, value } = emailValidationScheema.validate(req.params);
+
+    if (error) {
+      res.status(500).send({
+        message: error,
+      });
+    } else {
+      let owner = await Owner.findOne({ email: value.email, isDeleted: false });
+
+      if (owner === null) {
+        res.status(403).send({
+          message: "Email doesn't exists",
+        });
+      } else {
+        res.status(getResouceCode(owner)).send(owner);
       }
-    );
+    }
   });
 
   router.get("/owners", validateToken, (req, res) => {
