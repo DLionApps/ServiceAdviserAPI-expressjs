@@ -120,6 +120,22 @@ module.exports = (app) => {
     }
   });
 
+  router.get("/CheckEmail/:email", (req, res) => {
+    Owner.findOne(
+      { email: req.params.email, isDeleted: false },
+      (err, data) => {
+        if (err) {
+          res.status(500).send({
+            statusCode: 500,
+            message: err,
+          });
+        } else {
+          res.status(getResouceCode(data)).send(data);
+        }
+      }
+    );
+  });
+
   router.get("/owners", validateToken, (req, res) => {
     Owner.find({ isDeleted: false }, (err, data) => {
       if (err) {
