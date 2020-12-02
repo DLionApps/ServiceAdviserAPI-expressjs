@@ -170,7 +170,7 @@ module.exports = (app) => {
     });
   });
 
-  router.put("/owner/:id", validateToken, (req, res) => {
+  router.put("/owner/:id", (req, res) => {
     Owner.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       req.body,
