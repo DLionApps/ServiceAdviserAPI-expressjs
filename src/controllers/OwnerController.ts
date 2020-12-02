@@ -128,18 +128,19 @@ module.exports = (app) => {
     const { error, value } = emailValidationScheema.validate(req.params);
 
     if (error) {
-      res.status(500).send({
-        message: error,
-      });
+      res.status(500).send(error);
     } else {
-      let owner = await Owner.findOne({ email: value.email, isDeleted: false });
+      let owner: any = await Owner.findOne({
+        email: value.email,
+        isDeleted: false,
+      });
 
       if (owner === null) {
         res.status(403).send({
           message: "Email doesn't exists",
         });
       } else {
-        res.status(getResouceCode(owner)).send(owner);
+        res.status(getResouceCode(owner)).send({ owner: owner });
       }
     }
   });
