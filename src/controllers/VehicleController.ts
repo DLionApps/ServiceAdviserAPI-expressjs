@@ -75,6 +75,22 @@ module.exports = (app) => {
     });
   });
 
+  router.get("/vehicles/:ownerId", validateToken, (req, res) => {
+    Vehicle.find(
+      { isDeleted: false, ownerID: req.params.ownerId },
+      (err, data) => {
+        if (err) {
+          res.status(500).send({
+            statusCode: 500,
+            message: err,
+          });
+        } else {
+          res.status(getResouceCode(data)).send(data);
+        }
+      }
+    );
+  });
+
   router.get("/vehicle/:id", validateToken, (req, res) => {
     Vehicle.findOne({ _id: req.params.id, isDeleted: false }, (err, data) => {
       if (err) {
