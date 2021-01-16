@@ -3,11 +3,11 @@ import * as uuid from "uuid";
 
 const ServiceSchema = new mongoose.Schema({
   _id: String,
-  mileage: Number,
-  lastServiceMileage: Number,
-  workingHours: Number,
-  lastServiceHours: Number,
-  lastServiceDate: String,
+  serviceDate: String,
+  serviceHour: Number,
+  serviceMileage: Number,
+  serviiceRemarks: String,
+  serviceBulletins: [],
   isDeleted: { type: Boolean, default: false },
   vehicleID: String,
 });

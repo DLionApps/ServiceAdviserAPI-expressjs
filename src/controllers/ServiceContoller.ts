@@ -1,4 +1,5 @@
 import Service from "../models/serviceModel";
+import GetVehicalByID from "../commonFunctions/GetVehicalByID";
 import * as Joi from "joi";
 import * as express from "express";
 import validateToken from "../commonFunctions/TokenValidator";
@@ -16,13 +17,20 @@ module.exports = (app) => {
 
   router.post("/service", validateToken, async (req, res) => {
     const { body } = req;
+    var selectedVehicle = await GetVehicalByID(req.body.vehicleID);
 
     const serviceValidationScheema = Joi.object().keys({
-      mileage: Joi.number(),
-      lastServiceMileage: Joi.number(),
-      workingHours: Joi.number(),
-      lastServiceHours: Joi.number(),
-      lastServiceDate: Joi.string().required(),
+      serviceDate: Joi.string().required(),
+      serviceHour:
+        selectedVehicle.vehicleType === 1
+          ? Joi.number().required()
+          : Joi.number(),
+      serviceMileage:
+        selectedVehicle.vehicleType === 0
+          ? Joi.number().required()
+          : Joi.number(),
+      serviiceRemarks: Joi.string(),
+      serviceBulletins: Joi.array(),
       vehicleID: Joi.string().required(),
       isDeleted: Joi.boolean(),
     });
@@ -34,13 +42,13 @@ module.exports = (app) => {
         res.status(500).send(error);
       } else {
         const service = new Service({
-          mileage: value.mileage,
-          lastServiceMileage: value.lastServiceMileage,
-          workingHours: value.workingHours,
-          lastServiceHours: value.lastServiceHours,
-          lastServiceDate: value.lastServiceDate,
-          vehicleID: value.vehicleID,
+          serviceDate: value.serviceDate,
+          serviceHour: value.serviceHour,
+          serviceMileage: value.serviceMileage,
+          serviiceRemarks: value.serviiceRemarks,
+          serviceBulletins: value.serviceBulletins,
           isDeleted: value.isDeleted,
+          vehicleID: value.vehicleID,
         });
 
         Service.create(service, (err, data) => {
