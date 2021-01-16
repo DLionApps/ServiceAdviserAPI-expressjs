@@ -6,6 +6,14 @@ import validateToken from "../commonFunctions/TokenValidator";
 module.exports = (app) => {
   var router = express.Router();
 
+  const getResouceCode = (data) => {
+    if (data === null) {
+      return 204;
+    } else {
+      return 200;
+    }
+  };
+
   router.post("/serviceBulletin", validateToken, async (req, res) => {
     const { body } = req;
 
@@ -40,6 +48,22 @@ module.exports = (app) => {
     } catch (ex) {
       res.status(500).send(ex);
     }
+  });
+
+  router.get("/serviceBulletin/:applicableIDs", validateToken, (req, res) => {
+    ServiceBulletinModel.find(
+      { isDeleted: false, applicableVehicleTypes: req.params.applicableIDs },
+      (err, data) => {
+        if (err) {
+          res.status(500).send({
+            statusCode: 500,
+            message: err,
+          });
+        } else {
+          res.status(getResouceCode(data)).send(data);
+        }
+      }
+    );
   });
   app.use("/api", router);
 };
