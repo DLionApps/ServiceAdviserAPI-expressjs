@@ -14,15 +14,11 @@
   },
   "scripts": {
     "build": "tsc && shx cp package.json dist",
-    "deploy": "gcloud app deploy",
     "dev": "nodemon dist",
-    "prepare": "npm run gcp-build",
-    "pretest": "npm run gcp-build",
     "test": "mocha test/*.test.js --exit",
     "posttest": "npm run lint",
     "lint": "tslint -p .",
-    "start": "node ./dist/server.js",
-    "gcp-build": "tsc -p ."
+    "start": "node ./dist/server.js"
   },
   "bugs": {
     "url": "https://github.com/DLionApps/ServiceAddviserAPI/issues"
