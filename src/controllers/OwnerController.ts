@@ -232,22 +232,23 @@ module.exports = (app) => {
   });
 
   router.delete("/owner/:id", validateToken, (req, res) => {
-    //   Owner.findOneAndUpdate(
-    //     { _id: req.params.id, isDeleted: false },
-    //     { isDeleted: true },
-    //     (err) => {
-    //       if (err) {
-    //         res.status(404).send({
-    //           statusCode: 404,
-    //           message: err || `Cannot delete Owner with id=${req.params.id}!`,
-    //         });
-    //       } else {
-    //         res.status(200).send({
-    //           message: "Owner deleted successfully!",
-    //         });
-    //       }
-    //     }
-    //   );
+    Owner.findOneAndUpdate(
+      { _id: req.params.id, isDeleted: false },
+      { isDeleted: true },
+      (err, data) => {
+        if (err) {
+          res.status(404).send({
+            statusCode: 404,
+            message: err || `Cannot delete Owner with id=${req.params.id}!`,
+          });
+        } else {
+          res.status(200).send({
+            message: "Owner deleted successfully!",
+            data: data,
+          });
+        }
+      }
+    );
   });
 
   app.use("/api", router);
