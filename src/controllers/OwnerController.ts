@@ -235,6 +235,9 @@ module.exports = (app) => {
     Owner.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
       { isDeleted: true },
+      {
+        new: true,
+      },
       (err, data) => {
         if (err) {
           res.status(404).send({
