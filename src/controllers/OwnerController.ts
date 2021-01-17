@@ -247,7 +247,6 @@ module.exports = (app) => {
         } else {
           res.status(200).send({
             message: "Owner deleted successfully!",
-            data: data,
           });
         }
       }
