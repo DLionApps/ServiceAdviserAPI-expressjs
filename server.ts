@@ -36,9 +36,9 @@ try {
 }
 
 require("./src/controllers/OwnerController")(app);
-require("./src/controllers/ServiceContoller")(app);
-require("./src/controllers/VehicleController")(app);
-require("./src/controllers/ServiceBulletinController")(app);
+// require("./src/controllers/ServiceContoller")(app);
+// require("./src/controllers/VehicleController")(app);
+// require("./src/controllers/ServiceBulletinController")(app);
 
 const server = app.listen(port, () => {
   console.log(`API listening on port ${port}`);
