@@ -92,6 +92,22 @@ module.exports = (app) => {
     });
   });
 
+  router.get("/services/:vehicleId", validateToken, (req, res) => {
+    Service.find(
+      { isDeleted: false, vehicleID: req.params.vehicleId },
+      (err, data) => {
+        if (err) {
+          res.status(500).send({
+            statusCode: 500,
+            message: err,
+          });
+        } else {
+          res.status(getResouceCode(data)).send(data);
+        }
+      }
+    );
+  });
+
   router.put("/service/:id", validateToken, (req, res) => {
     Service.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
